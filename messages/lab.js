@@ -16,7 +16,7 @@ function parse() {
 		parsedObjects = JSON.parse(raw);
 		elem = document.getElementById("messages");
 		for (count = 0; count < parsedObjects.length; count++) {
-			result += "<p> <span class = "text"> + parsedObjects[count]["content"] + " " +parsedObjects[count]["username"] + "</span></p>";
+			result += '<p> <span class = "text">' + parsedObjects[count]["content"] + " " +parsedObjects[count]["username"] + '</span></p>';
 		}
 			elem.innerHTML = result;
 		}
