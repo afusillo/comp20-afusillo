@@ -29,7 +29,7 @@ body {
 			var myLng = 0;
 			var me = new google.maps.LatLng(myLat, myLng);
 			var Options = {
-						zoom: 13, // The larger the zoom number, the bigger the zoom
+						zoom: 15, // The larger the zoom number, the bigger the zoom
 						center: me,
 						mapTypeId: google.maps.MapTypeId.ROADMAP //initially set up map
 					};
@@ -139,9 +139,12 @@ body {
 					position: students[i]['location'],
 					//map: map,
 					title: "Login: " + name + "<br>Lat: " + lat + " Lng: " + lng,
+					icon: 'me.png'
 				});
     		
-				
+					if (students[i]['name'] == 'JAY_GUTIERREZ') {
+					marker.setIcon('person.png');
+				}
 
     				marker.setMap(map);
 
@@ -169,6 +172,7 @@ body {
     				var marker = new google.maps.Marker({
     					position: location,
     					title: "Details: " + details,
+    					icon: 'landmark.png'
     				});
 
     				marker.setMap(map);
