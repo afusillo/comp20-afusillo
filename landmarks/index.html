@@ -36,6 +36,7 @@ body {
 			var map;
 			var marker;
 			var students = [];
+			var landmarks = [];
 			var infowindow = new google.maps.InfoWindow(); //GLOBAL INFO WINDOW
 
 			var http = new XMLHttpRequest();
@@ -48,7 +49,7 @@ body {
     					var raw = http.responseText;
     					var parsedObjects = JSON.parse(raw);
     				getStudents(parsedObjects);
-    				//getLandmarks(parsedObjects);
+    				getLandmarks(parsedObjects);
 
     			}
     		}
@@ -125,18 +126,19 @@ body {
 			function getStudents(data){
 
 			for (i = 0; i < data['people'].length; i++) {
-				var sname = data['people'][i]['login'];
-				var slat = data['people'][i]['lat'];
-				var slng = data['people'][i]['lng'];
-				var slocation = new google.maps.LatLng(slat, slng);
-				var newstudent = {name: sname, location: slocation};
+				var name = data['people'][i]['login'];
+				var lat = data['people'][i]['lat'];
+				console.log(lat);
+				var lng = data['people'][i]['lng'];
+				var location = new google.maps.LatLng(lat, lng);
+				var newstudent = {name: name, location: location};
 
 				students[students.length] = newstudent;
 				//make marker
 				var marker = new google.maps.Marker({
 					position: students[i]['location'],
 					//map: map,
-					title: "Login: " + sname + "<br>Lat: " + slat + " Lng: " + slng,
+					title: "Login: " + name + "<br>Lat: " + lat + " Lng: " + lng,
 				});
     		
 				
@@ -145,13 +147,40 @@ body {
 
     				google.maps.event.addListener(marker, 'click', function () {
     					infowindow.setContent(this.title);
-						
 						infowindow.open(map, this); 
     				});
     			}
     		}
 
 
+    		function getLandmarks(data){
+    			for(i = 0; i < data['landmarks'].length; i++){
+    				var details= data['landmarks'][i]['properties']['Details'];
+    				var coord= data['landmarks'][i]['geometry']['coordinates'];
+    				var lat = coord[1];
+    				var lng = coord[0];
+    				var location = new google.maps.LatLng(lat, lng);
+    
+
+    				var newlandmark = {details: details, location: location};
+
+    				landmarks[landmarks.length] = newlandmark;
+
+    				var marker = new google.maps.Marker({
+    					position: location,
+    					title: "Details: " + details,
+    				});
+
+    				marker.setMap(map);
+
+    				google.maps.event.addListener(marker, 'click', function () {
+    					infowindow.setContent(this.title);
+						infowindow.open(map, this); 
+    				});
+
+
+    			}
+    		}
 
 
 
