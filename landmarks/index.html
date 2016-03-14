@@ -1,3 +1,4 @@
+
 <html>
 
 	<head>
@@ -49,14 +50,11 @@ body {
     					var raw = http.responseText;
     					var parsedObjects = JSON.parse(raw);
     				getLandmarks(parsedObjects);
-    				getStudents(parsedObjects);
     	
 
     			}
     		}
 
-
-    		
 			
 			function init()
 			{
@@ -65,6 +63,7 @@ body {
 			}
 			
 			function getMyLocation() {
+
 				if (navigator.geolocation) { // the navigator.geolocation object is supported on your browser
 					navigator.geolocation.getCurrentPosition(function(position) {
 						myLat = position.coords.latitude;
@@ -84,8 +83,64 @@ body {
 			}
 
 
-  			
-			function getStudents(data){
+
+    		function getLandmarks(data){
+    			var minloc = 5;
+    			var minlocname;
+
+
+    			for(i = 0; i < data['landmarks'].length; i++){
+    				var details= data['landmarks'][i]['properties']['Details'];
+    				var coord= data['landmarks'][i]['geometry']['coordinates'];
+    				var name =data['landmarks'][i]['properties']['Location_Name'];
+    				var lat = coord[1];
+    				var lng = coord[0];
+    				var me = new google.maps.LatLng(myLat, myLng);
+    				var location = new google.maps.LatLng(lat, lng);
+
+    				var distance = haversineDistance(myLng, myLat, lng, lat);
+    				if (distance < minloc){
+    					minloc = location;
+    					mindistance = distance;
+    					minlocname = name;
+    				}
+    
+
+    				var newlandmark = {details: details, location: location};
+    				landmarks[landmarks.length] = newlandmark;
+
+    				var marker = new google.maps.Marker({
+    					position: location,
+    					title: "Details: " + details,
+    					icon: 'landmark.png'
+    				});
+
+    				marker.setMap(map);
+
+    				google.maps.event.addListener(marker, 'click', function () {
+    					infowindow.setContent(this.title);
+						infowindow.open(map, this); 
+    				});
+
+    			}
+
+    			getStudents(data, mindistance, minlocname);
+
+				var pathtome = [me, minloc];
+				var polyline = new google.maps.Polyline({
+					path: pathtome,
+					map: map,
+					strokeColor: '#FF0000',
+					strokeOpacity: 1.0,
+					strokeWeight: 2,
+					visible: true
+				});
+
+    		}
+
+
+			
+			function getStudents(data, mindist, minname){
 
 			for (i = 0; i < data['people'].length; i++) {
 				var name = data['people'][i]['login'];
@@ -102,7 +157,7 @@ body {
 				if (name == 'JAY_GUTIERREZ'){
 					var marker = new google.maps.Marker({
 					position: students[i]['location'],
-					title: "Closest historical landmark",
+					title: "<h2> ME! </h2><h3>Closest landmark:  " + minname + "</h3>" + "<h3> Distance:  " + mindist + " miles</h3>",
 					icon: 'person.png'
 				});
 				}
@@ -124,57 +179,6 @@ body {
     				});
     			}
     		}
-
-
-    		function getLandmarks(data){
-    			var minloc = 5;
-
-
-    			for(i = 0; i < data['landmarks'].length; i++){
-    				var details= data['landmarks'][i]['properties']['Details'];
-    				var coord= data['landmarks'][i]['geometry']['coordinates'];
-    				var lat = coord[1];
-    				var lng = coord[0];
-    				var me = new google.maps.LatLng(myLat, myLng);
-    				var location = new google.maps.LatLng(lat, lng);
-
-    				var distance = haversineDistance(myLng, myLat, lng, lat);
-    				if (distance < minloc){
-    					minloc = location;
-    				}
-    
-
-    				var newlandmark = {details: details, location: location};
-    				landmarks[landmarks.length] = newlandmark;
-
-    				var marker = new google.maps.Marker({
-    					position: location,
-    					title: "Details: " + details,
-    					icon: 'landmark.png'
-    				});
-
-    				marker.setMap(map);
-
-    				google.maps.event.addListener(marker, 'click', function () {
-    					infowindow.setContent(this.title);
-						infowindow.open(map, this); 
-    				});
-
-    			}
-    			//make polyline to me
-
-				var pathtome = [me, minloc];
-				var polyline = new google.maps.Polyline({
-					path: pathtome,
-					map: map,
-					strokeColor: '#FF0000',
-					strokeOpacity: 1.0,
-					strokeWeight: 2,
-					visible: true
-				});
-
-    		}
-
 
     		function haversineDistance(lon1, lat1, lon2, lat2) {
   				function toRad(x) {
