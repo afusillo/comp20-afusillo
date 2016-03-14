@@ -48,8 +48,9 @@ body {
     					//alert(http.responseText);
     					var raw = http.responseText;
     					var parsedObjects = JSON.parse(raw);
-    				getStudents(parsedObjects);
     				getLandmarks(parsedObjects);
+    				getStudents(parsedObjects);
+    	
 
     			}
     		}
@@ -82,45 +83,6 @@ body {
 				}
 			}
 
-			/*function renderMap() {
-
-				me = new google.maps.LatLng(myLat, myLng);
-				
-
-				// Update map and go there...
-				map.panTo(me);
-
-
-				//Create a marker
-				marker = new google.maps.Marker({
-					position: me,
-					title: "<h1>HELLO IT ME</h1>" + "<p>" + myLat + "   " + myLng + "</p>"
-				});
-				marker.setMap(map);
-					
-				// Open info window on click of marker
-				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent(marker.title);
-					infowindow.open(map, marker); //THIS IS UNIVERSAL
-				}
-
-					var url = "https://defense-in-derpth.herokuapp.com/sendLocation";
-					var params = "login=JayGutierrez&lat="+myLat+"&lng="+myLng;
-					http.open("POST", url, true);
-					http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-					http.send(params);
-
-			
-					});
-				}
-				else {
-					alert("Geolocation is not supported by your web browser.  What a shame!");
-				}
-			}
-
-
-*/
-
 
   			
 			function getStudents(data){
@@ -128,7 +90,7 @@ body {
 			for (i = 0; i < data['people'].length; i++) {
 				var name = data['people'][i]['login'];
 				var lat = data['people'][i]['lat'];
-				console.log(lat);
+				//console.log(lat);
 				var lng = data['people'][i]['lng'];
 				var location = new google.maps.LatLng(lat, lng);
 				var distance = haversineDistance(myLng, myLat, lng, lat);
@@ -136,6 +98,15 @@ body {
 
 				students[students.length] = newstudent;
 				//make marker
+
+				if (name == 'JAY_GUTIERREZ'){
+					var marker = new google.maps.Marker({
+					position: students[i]['location'],
+					title: "Closest historical landmark",
+					icon: 'person.png'
+				});
+				}
+				else{
 				var marker = new google.maps.Marker({
 					position: students[i]['location'],
 					//map: map,
@@ -143,10 +114,8 @@ body {
 					icon: 'me.png'
 				});
     		
-					if (students[i]['name'] == 'JAY_GUTIERREZ') {
-					marker.setIcon('person.png');
+				
 				}
-
     				marker.setMap(map);
 
     				google.maps.event.addListener(marker, 'click', function () {
@@ -158,16 +127,24 @@ body {
 
 
     		function getLandmarks(data){
+    			var minloc = 5;
+
+
     			for(i = 0; i < data['landmarks'].length; i++){
     				var details= data['landmarks'][i]['properties']['Details'];
     				var coord= data['landmarks'][i]['geometry']['coordinates'];
     				var lat = coord[1];
     				var lng = coord[0];
+    				var me = new google.maps.LatLng(myLat, myLng);
     				var location = new google.maps.LatLng(lat, lng);
+
+    				var distance = haversineDistance(myLng, myLat, lng, lat);
+    				if (distance < minloc){
+    					minloc = location;
+    				}
     
 
     				var newlandmark = {details: details, location: location};
-
     				landmarks[landmarks.length] = newlandmark;
 
     				var marker = new google.maps.Marker({
@@ -183,8 +160,19 @@ body {
 						infowindow.open(map, this); 
     				});
 
-
     			}
+    			//make polyline to me
+
+				var pathtome = [me, minloc];
+				var polyline = new google.maps.Polyline({
+					path: pathtome,
+					map: map,
+					strokeColor: '#FF0000',
+					strokeOpacity: 1.0,
+					strokeWeight: 2,
+					visible: true
+				});
+
     		}
 
 
@@ -210,90 +198,6 @@ body {
 }
 
 
-
-			//Send the proper header information along with the request
-
-				
-
-
-
-    			
-    		
-    			/*					
-    				raw = http.responseText;
-    				parsedObjects = JSON.parse(raw);
-    				var latit = parsedObjects["people"][1]["lat"];
-    				var longit = parsedObjects["people"][1]["lng"];
-
-    				var them = new google.maps.LatLng(latit, longit);
-				
-
-    				maker = new google.maps.Marker({
-    					position: them,
-    					title: "HELLO"
-    				});
-    				maker.setMap(map);
-
-    				google.maps.event.addListener(maker, 'click', function () {
-    					infowindow.setContent(maker.title);
-						infowindow.open(map, maker); 
-    				});
-    			}
-    			*/
-    		
-   
-        			/*raw = http.responseText;
-        			 parsedObjects = JSON.parse(raw);
-        			 markers= new Array();
-
-        			 for (i = 0; i < parsedObjects["people"].length; i++) {
-
-        			 		latit= parsedObjects["people"][i]["lat"]
-        			 		longit= parsedObjects["people"][i]["lng"]
-
-        			 		them = new google.maps.LatLng(latit, longit);
-
-      
-
-
-        					markers[i] = new google.maps.Marker({
-							position: them,
-							title: "<p>" + parsedObjects["people"][i]["login"] + "</p>"
-							});
-						markers[i].setMap(map);
-
-        			 	google.maps.event.addListener(markers[i], 'click', function() {
-						infowindow.setContent(markers[i].title);
-						infowindow.open(map, markers[i]); 
-						//THIS IS UNIVERSAL
-						});
-
-        			}
-        			*/
-   
-
-
-/*
-			function renderMap()
-			{
-				me = new google.maps.LatLng(myLat, myLng);
-
-				map.panTo(me);
-	
-				// Create a marker
-				marker = new google.maps.Marker({
-					position: me,
-					title: "<h1>HELLO IT ME</h1>" + "<p>" + myLat + "   " + myLng + "</p>"
-				});
-				marker.setMap(map);
-					
-				// Open info window on click of marker
-				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent(marker.title);
-					infowindow.open(map, marker); //THIS IS UNIVERSAL
-				});
-			}
-	*/		
 		</script>
 	</head>
 	
