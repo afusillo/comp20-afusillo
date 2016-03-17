@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>Captain's Log</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+	<script>
+
+
+	//function reload(){
+		//console.log("HI");
+		//page = $("#log");
+		//output = " ";
+		//for(key in localStorage){
+		//	output = "<p>" + key + " - " + localStorage[key] + "</p>" + output + "\n";
+			//console.log(output);
+		//}
+		//output = output = "<p>" + key + " - " + localStorage[key] + "</p>" + output + "\n";
+		//page.html(output);
+//
+	//}
+
+
+	function store(){
+ 		text = $("#msg").val();
+ 		localStorage[Date()] = text;
+		output = "<p>" + Date() + " - " + text + "</p>" + output + "\n";
+		page.html(output);
+
+ 		//reload();
+
+	}
+
+
+	$(document).ready(function() {
+	output = " ";
+	page = $("#log");
+		for(key in localStorage){
+			output = "<p>" + key + " - " + localStorage[key] + "</p>" + output + "\n";
+		}
+			page.html(output);
+
+	$("#msg").change(function(){
+		localStorage.clear();
+		store();
+
+
+		});
+});
+
+	</script>
+</head>
+
+<body>
+	<h1>Captain's Log</h1>
+	<h3>New entry: <input type="text" id="msg" name="msg" size="30" /></h3>
+	<div id="log"></div>
+</body>
+</html>
