@@ -9,27 +9,12 @@
 	<script>
 
 
-	//function reload(){
-		//console.log("HI");
-		//page = $("#log");
-		//output = " ";
-		//for(key in localStorage){
-		//	output = "<p>" + key + " - " + localStorage[key] + "</p>" + output + "\n";
-			//console.log(output);
-		//}
-		//output = output = "<p>" + key + " - " + localStorage[key] + "</p>" + output + "\n";
-		//page.html(output);
-//
-	//}
-
-
 	function store(){
  		text = $("#msg").val();
  		localStorage[Date()] = text;
 		output = "<p>" + Date() + " - " + text + "</p>" + output + "\n";
 		page.html(output);
 
- 		//reload();
 
 	}
 
@@ -43,7 +28,6 @@
 			page.html(output);
 
 	$("#msg").change(function(){
-		localStorage.clear();
 		store();
 
 
